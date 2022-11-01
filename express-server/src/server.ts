@@ -14,15 +14,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 app.post("/user", createNewUser);
-app.post("/signin", signIn)
+app.post("/signin", signIn);
 
 app.get("/", (req, res) => {
-	console.log("Hello from express");
-	res.status(200);
-	res.json({ message: "Hello" });
+  console.log("Hello from express");
+  res.status(200);
+  res.json({ message: "Hello" });
 });
-
-
 
 app.use("/api", protect, router);
 

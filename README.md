@@ -273,3 +273,30 @@ export const signIn = async (req, res) => {
 
 ### Validation
 
+We will use a package called Express Validator
+` npm i express-validator --save`
+
+We will use the following functions:
+
+-   check - checks the value of a field
+-   validationResult - returns the result of the validation
+
+```
+export const validateRegister = [
+  check("username").notEmpty().withMessage("Username is required"),
+  check("password")
+    .isLength({ min: 6 })
+    .withMessage("Password must be at least 6 characters long"),
+  check("email").isEmail().withMessage("Email is not valid"),
+];
+```
+
+We use the `body` import to check whether the body has the right fields. If the body does not have the right fields, we will return a 400 status code and the errors.
+
+```
+router.put("/product/:id", body("name"), (req,res) => {
+  const errors = validationResult(req)
+});
+```
+
+
