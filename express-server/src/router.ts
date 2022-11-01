@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { body, check, validationResult } from "express-validator";
+import { body } from "express-validator";
 import { handleInputErrors } from "./middleware";
 
 const router = Router();
@@ -44,8 +44,12 @@ router.post(
   "/update",
   body("updatedAt").toDate(),
   body(["title", "body", "status", "version", "productId"]).isString(),
+  body("status").isIn(["IN_PROGRESS", "SHIPPED", "DEPRECATED"]),
   handleInputErrors,
-  (req, res) => {}
+  (req, res) => {
+    res.status(200);
+    res.json({ message: "Hello from products" });
+  }
 );
 router.put(
   "/update/:id",
