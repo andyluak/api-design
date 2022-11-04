@@ -38,6 +38,21 @@ enum UPDATE_STATUS {
   DEPRECATED
 }
 
+enum UPDATE_POINT_TYPE {
+  FEATURES
+  BUG_FIXES
+  IMPROVEMENTS
+}
+
+model UpdataPointType {
+  id        String            @id @default(uuid())
+  createdAt DateTime          @default(now())
+  type      UPDATE_POINT_TYPE @default(FEATURES)
+
+  updatePointId String
+  updatePoint   UpdatePoint @relation(fields: [updatePointId], references: [id])
+}
+
 model Update {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
@@ -60,9 +75,11 @@ model UpdatePoint {
   createdAt DateTime @default(now())
   updatedAt DateTime
 
-  name        String @db.VarChar(255)
-  description String
+  description       String
+  updataPointTypeId String
 
   updateId String
   update   Update @relation(fields: [updateId], references: [id])
+
+  updataPointType UpdataPointType[]
 }
