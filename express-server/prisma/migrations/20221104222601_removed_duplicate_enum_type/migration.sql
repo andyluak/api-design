@@ -1,0 +1,2 @@
+-- DropEnum
+DROP TYPE "UPDATE_POINT_TYPE";

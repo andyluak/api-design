@@ -23,6 +23,9 @@ router.get("/product", async (req, res) => {
     where: {
       belongsToId: id,
     },
+    include: {
+      updates: true,
+    },
   });
   res.status(200);
 
@@ -108,17 +111,49 @@ router.delete(
 );
 
 // Update routes
-router.get("/update", (req, res) => {});
-router.get("/update/:id", () => {});
+router.get(
+  "/update",
+  body("productId").exists().isString(),
+  handleInputErrors,
+  async (req, res) => {}
+);
+router.get("/update/:id", param("id").exists().isString(), async (req, res) => {
+  const { id } = req.params;
+
+  const updates = await prisma.update.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      updatePoints: true,
+    },
+  });
+
+  res.status(200);
+  res.json(updates);
+});
 router.post(
   "/update",
-  body("updatedAt").toDate(),
-  body(["title", "body", "status", "version", "productId"]).isString(),
+  body(["title", "status", "productId"]).isString(),
+  body("body").optional(),
   body("status").isIn(["IN_PROGRESS", "SHIPPED", "DEPRECATED"]),
   handleInputErrors,
-  (req, res) => {
+  async (req, res) => {
+    const { productId, title, status, body, version } = req.body;
+    const date = new Date().toISOString();
+
+    const update = await prisma.update.create({
+      data: {
+        updatedAt: date,
+        title,
+        body: body ? body : "",
+        status,
+        version: version ? version : title,
+        productId: productId,
+      },
+    });
     res.status(200);
-    res.json({ message: "Hello from products" });
+    res.json(update);
   }
 );
 router.put(
@@ -137,13 +172,45 @@ router.patch(
 router.delete("/update/:id", () => {});
 
 // Update Points routes
-router.get("/updatepoint", () => {});
-router.get("/updatepoint/:id", () => {});
+router.get("/updatepoint", async (req, res) => {
+  const { updateId } = req.body;
+
+  const updatePoints = await prisma.updatePoint.findMany({
+    where: {
+      updateId,
+    },
+  });
+
+  res.status(200);
+  res.json(updatePoints);
+});
+router.get(
+  "/updatepoint/:id",
+  param("id").exists().isString(),
+  handleInputErrors,
+  async (req, res) => {}
+);
 router.post(
   "/updatepoint",
-  body(["name", "description", "updateId"]).isString(),
+  body(["description", "updateId"]).isString(),
+  body("type").isIn(["FEATURE", "BUG_FIX", "IMPROVEMENT"]),
   handleInputErrors,
-  (req, res) => {}
+  async (req, res) => {
+    const { description, updateId, type } = req.body;
+    const date = new Date().toISOString();
+
+    const updatePoint = await prisma.updatePoint.create({
+      data: {
+        updatedAt: date,
+        description,
+        type,
+        updateId,
+      },
+    });
+
+    res.status(200);
+    res.json(updatePoint);
+  }
 );
 router.put(
   "/updatepoint/:id",

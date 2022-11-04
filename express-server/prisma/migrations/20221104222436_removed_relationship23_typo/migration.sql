@@ -1,0 +1,16 @@
+/*
+  Warnings:
+
+  - The values [BUG_FIXE] on the enum `UPDATE_POINT_TYPE2` will be removed. If these variants are still used in the database, this will fail.
+
+*/
+-- AlterEnum
+BEGIN;
+CREATE TYPE "UPDATE_POINT_TYPE2_new" AS ENUM ('FEATURE', 'BUG_FIX', 'IMPROVEMENT');
+ALTER TABLE "UpdatePoint" ALTER COLUMN "type" DROP DEFAULT;
+ALTER TABLE "UpdatePoint" ALTER COLUMN "type" TYPE "UPDATE_POINT_TYPE2_new" USING ("type"::text::"UPDATE_POINT_TYPE2_new");
+ALTER TYPE "UPDATE_POINT_TYPE2" RENAME TO "UPDATE_POINT_TYPE2_old";
+ALTER TYPE "UPDATE_POINT_TYPE2_new" RENAME TO "UPDATE_POINT_TYPE2";
+DROP TYPE "UPDATE_POINT_TYPE2_old";
+ALTER TABLE "UpdatePoint" ALTER COLUMN "type" SET DEFAULT 'FEATURE';
+COMMIT;
