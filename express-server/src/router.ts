@@ -214,12 +214,54 @@ router.post(
 );
 router.put(
   "/updatepoint/:id",
-  body(["name", "updateId", "description"]).isString(),
+  body(["type", "description"]).isString().optional(),
+  param("id").exists().isString(),
   handleInputErrors,
-  (req, res) => {}
+  async (req, res) => {
+
+    const {
+      body: { type, description },
+      params: { id },
+    } = req;
+    const date = new Date().toISOString();
+    console.log(req.body);
+    try {
+      const modifiedUpdatePoint = await prisma.updatePoint.update({
+        where: {
+          id,
+        },
+        data: {
+          type,
+          description,
+          updatedAt: date,
+        },
+      });
+      res.status(200);
+      res.end()
+    } catch (e) {
+      return res.status(401);
+    }
+  }
 );
 router.patch("/updatepoint/:id", () => {});
-router.delete("/updatepoint/:id", () => {});
+router.delete(
+  "/updatepoint/:id",
+  param("id").exists().isString(),
+  async (req, res) => {
+    const { id } = req.params;
+    try {
+      await prisma.updatePoint.delete({
+        where: {
+          id,
+        },
+      });
+      res.status(200);
+      res.json({ message: "Update Point Deleted" });
+    } catch (e) {
+      return res.status(401);
+    }
+  }
+);
 
 router.put(
   "/user",
