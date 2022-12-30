@@ -105,7 +105,8 @@ router.delete(
       res.status(200);
       res.json({ message: "Product Deleted" });
     } catch (e) {
-      return res.status(401);
+      res.status(401);
+      res.json({ message: "Product not found" });
     }
   }
 );
